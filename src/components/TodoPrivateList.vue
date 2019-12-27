@@ -19,6 +19,18 @@
 <script>
 import TodoItem from "../components/TodoItem";
 import TodoFilters from "../components/TodoFilters";
+import gql from 'graphql-tag';
+
+export const GET_MY_TODOS = gql`
+  query getMyTodos {
+    todos(where: { is_public: { _eq: false} }, order_by: { created_at: desc }) {
+      id
+      title
+      created_at
+      is_completed
+  }
+ }`;
+
 export default {
   components: {
     TodoItem, TodoFilters
@@ -28,21 +40,15 @@ export default {
       type: "private",
       filterType: "all",
       todos: [
-        {
-          id: "1",
-          title: "This is private todo 1",
-          is_completed: true,
-          is_public: false
-        },
-        {
-          id: "2",
-          title: "This is private todo 2",
-          is_completed: false,
-          is_public: false
-        }
+       
       ],
     }
   },
+   apollo: {
+     todos: {
+       query: GET_MY_TODOS,
+     },
+   },
   computed: {
     remainingTodos: function() {
       const activeTodos = this.todos !== undefined ? this.todos.filter((todo) => todo.is_completed !== true) : []
